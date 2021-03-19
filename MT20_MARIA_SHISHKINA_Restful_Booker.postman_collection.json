@@ -1,0 +1,490 @@
+{
+	"info": {
+		"_postman_id": "d9f9981b-247f-4a0d-bc7d-21387ccd1708",
+		"name": "MT20_MARIA_SHISHKINA_Restful_Booker",
+		"description": "## Overview\nThe Restful Booker API is a sample API based on hotel bookings. The API contains endpoints to demonstrate CRUD operations. The source code can be obtained from https://github.com/mwinteringham/restful-booker\n\n",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "TEST Get Auth Token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"",
+									"pm.globals.set(\"my_booker_token\", pm.response.json().token);",
+									"",
+									"pm.test(\"Status code is 200\", () => pm.response.to.have.status(200));",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\": \"admin\",\r\n    \"password\": \"password123\"\r\n}"
+						},
+						"url": {
+							"raw": "{{url}}/auth",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"auth"
+							]
+						},
+						"description": "Get auth token"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Bookings",
+			"item": [
+				{
+					"name": "TEST Get Bookings",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var status_code = 200;",
+									"pm.test(\"Status code is \" + status_code, function () {",
+									"    pm.response.to.have.status(status_code);",
+									"});",
+									"",
+									"pm.test(\"Response time is below 2 sec\", () => pm.expect(pm.response.responseTime).to.be.below(2000));",
+									"",
+									"",
+									"var JD = JSON.parse(responseBody);",
+									"console.log(pm.response.json().length);",
+									"pm.globals.set(\"Lenght_Of_The_Object\",pm.response.json().length);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/booking",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"booking"
+							]
+						},
+						"description": "Get a list of all bookings"
+					},
+					"response": []
+				},
+				{
+					"name": "TEST Create new Booking",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"",
+									"pm.test(\"Status code is 200\", () => pm.response.to.have.status(200));",
+									"pm.test(\"Response time is below 2 sec\", () => pm.expect(pm.response.responseTime).to.be.below(2000));",
+									"",
+									"pm.globals.set(\"bookingID\", pm.response.json().bookingid);",
+									"console.log(pm.globals.get(\"bookingID\"));",
+									"",
+									"pm.test(\"First name is Sally\", () => pm.expect(jsonData.booking.firstname).to.equal(pm.environment.get(\"First_name\")));",
+									"pm.test(\"Last name is Brown\", () => pm.expect(jsonData.booking.lastname).to.equal(pm.environment.get(\"Last_name\")));",
+									"pm.test(\"Total price for booking is 111\", () => pm.expect(jsonData.booking.totalprice).to.equal(Number(pm.environment.get(\"Total_price\"))));",
+									"pm.test(\"Deposit is paid\", () => pm.expect(jsonData.booking.depositpaid).to.equal(Boolean(pm.environment.get(\"Deposit\"))));",
+									"",
+									"pm.test(\"Checkin date is 6th of March 2020\", () => pm.expect(jsonData.booking.bookingdates.checkin).to.equal(pm.environment.get(\"Checkin\")));",
+									"pm.test(\"Checkout date is 9th of March 2020\", () => pm.expect(jsonData.booking.bookingdates.checkout).to.equal(pm.environment.get(\"Checkout\")));",
+									"",
+									"pm.test(\"Guest has ordered breakfast\", () => pm.expect(jsonData.booking.additionalneeds).to.equal(pm.environment.get(\"Add_need\")));",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"firstname\" : \"{{First_name}}\",\r\n  \"lastname\" : \"{{Last_name}}\",\r\n  \"totalprice\" : {{Total_price}},\r\n  \"depositpaid\" :{{Deposit}},\r\n  \"additionalneeds\" : \"{{Add_need}}\",\r\n  \"bookingdates\" : {\r\n    \"checkin\" : \"{{Checkin}}\",\r\n    \"checkout\" : \"{{Checkout}}\"\r\n  }\r\n}"
+						},
+						"url": {
+							"raw": "{{url}}/booking",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"booking"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "TEST Get Booking by variables",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", () => pm.response.to.have.status(200));\r",
+									"pm.test(\"Response time is below 2 sec\", () => pm.expect(pm.response.responseTime).to.be.below(2000));\r",
+									"\r",
+									"var jsonData = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Geting booking ID\", () => pm.globals.get(\"bookingID\"));\r",
+									"\r",
+									"pm.test(\"Booking body is not null\", () => pm.expect(jsonData.booking).to.not.equal(null));\r",
+									"\r",
+									"var JD = JSON.parse(responseBody);\r",
+									"console.log(pm.response.json().length);\r",
+									"pm.test(\"Test of the Object\", () => pm.expect(pm.globals.get(\"Lenght_Of_The_Object\")+1).to.equal(pm.response.json().length));"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/booking",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"booking"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "TEST Get Booking by ID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", () => pm.response.to.have.status(200));\r",
+									"pm.test(\"Response time is below 2 sec\", () => pm.expect(pm.response.responseTime).to.be.below(2000));\r",
+									"\r",
+									"var jsonData = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Geting booking ID\", () => pm.globals.get(\"bookingID\"));\r",
+									"\r",
+									"pm.test(\"Booking body is not null\", () => pm.expect(jsonData.booking).to.not.equal(null));"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{url}}/booking/{{bookingID}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"booking",
+								"{{bookingID}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "TEST Update Booking",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", () => pm.response.to.have.status(200));\r",
+									"pm.test(\"Response time is below 2 sec\", () => pm.expect(pm.response.responseTime).to.be.below(2000));\r",
+									"\r",
+									"var jsonData = pm.response.json();\r",
+									"\r",
+									"pm.test(\"We have James on the page\", () => pm.expect(pm.response.text()).to.include(pm.environment.get(\"First_name_update1\")));\r",
+									"\r",
+									"//pm.test(\"Checkout date is still 9th of March 2020\", () => pm.expect(pm.response.text()).to.include(\"2020-03-09\"));\r",
+									"pm.test(\"Checkout date is still 9th of March 2020\", () => pm.expect(pm.response.text()).to.include(pm.environment.get(\"Checkout\")));"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Cookie",
+								"value": "token={{my_booker_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"firstname\" : \"{{First_name_update1}}\",\r\n    \"lastname\" : \"{{Last_name}}\",\r\n    \"totalprice\" : {{Total_price}},\r\n    \"depositpaid\" : {{Deposit}},\r\n    \"bookingdates\" : {\r\n        \"checkin\" : \"{{Checkin}}\",\r\n        \"checkout\" : \"{{Checkout}}\"\r\n    },\r\n    \"additionalneeds\" : \"{{Add_need}}\"\r\n}"
+						},
+						"url": {
+							"raw": "{{url}}/booking/{{bookingID}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"booking",
+								"{{bookingID}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "TEST Update Booking (partial)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", () => pm.response.to.have.status(200));",
+									"",
+									"var jsonData = pm.response.json();",
+									"",
+									"//VISAR OLIKA SÄTT ATT TESTA",
+									"//pm.test(\"Booking is updated with new firstname Jim\", () => pm.expect(pm.response.text()).to.include(\"Jim\"));",
+									"pm.test(\"Booking is updated with new firstname Jim\", () => pm.expect(pm.response.text()).to.include(pm.environment.get(\"First_name_update2\")));",
+									"",
+									"//VISAR OLIKA SÄTT ATT TESTA",
+									"//pm.test(\"Lastname of guest is still Brown\", () => pm.expect(pm.response.text()).to.include(\"Brown\"));",
+									"//pm.test(\"Last name is Brown\", () => pm.expect(pm.response.text()).to.include(pm.environment.get(\"Last_name\")));",
+									"pm.test(\"Last name is Brown\", () => pm.expect(jsonData.lastname).to.equal(pm.environment.get(\"Last_name\")));",
+									"",
+									"//VISAR OLIKA SÄTT ATT TESTA",
+									"//pm.test(\"Jim has booked both breakfast and dinner\", () => pm.expect(pm.response.text()).to.include(\"Breakfast and dinner\"));",
+									"pm.test(\"Jim has booked both breakfast and dinner\", () => pm.expect(jsonData.additionalneeds).to.equal(pm.environment.get(\"Add_need_update\")));",
+									"",
+									"",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Cookie",
+								"type": "text",
+								"value": "token={{my_booker_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"firstname\" : \"{{First_name_update2}}\",\r\n    \"lastname\" : \"{{Last_name}}\",\r\n    \"additionalneeds\" : \"{{Add_need_update}}\"\r\n}"
+						},
+						"url": {
+							"raw": "{{url}}/booking/{{bookingID}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"booking",
+								"{{bookingID}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "TEST Delete Booking",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", () => pm.response.to.have.status(201));",
+									"",
+									"var url = pm.environment.get(\"url\") + \"/booking/\" +  pm.globals.get(\"bookingID\");",
+									"",
+									"const getRequest = {",
+									"        url: url,",
+									"        method: 'GET'",
+									"};",
+									"",
+									"pm.sendRequest(getRequest, function (err, res) {",
+									"    if (err) { ",
+									"        console.log(err);",
+									"    }",
+									"    ",
+									"    console.log(res);",
+									"    ",
+									"    pm.test('Response should be Not Found', function () {",
+									"        pm.expect(res.status).to.include(\"Not Found\");",
+									"    });",
+									"    ",
+									"    pm.test(\"Response code 404\", function() {",
+									"        pm.expect(res.code).to.equal(404);",
+									"    })",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Cookie",
+								"value": "token={{my_booker_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{url}}/booking/{{bookingID}}?=",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"booking",
+								"{{bookingID}}"
+							],
+							"query": [
+								{
+									"key": "",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "All bookings requests "
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}
